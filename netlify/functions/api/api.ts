@@ -7,6 +7,11 @@ import { options } from "./push-settings";
 const app = express();
 app.use(cors());
 
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.url);
+  next();
+});
+
 const apnProvider = new apn.Provider(options);
 const deviceToken =
   "b4bcd2b6043d90f8ace9738bdf495b8b294f0ca876f1f350a41803b0df43e5d5";
