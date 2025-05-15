@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import apn from "apn";
+import serverless from "serverless-http";
 import { options } from "./push-settings";
 
 const app = express();
@@ -39,3 +40,5 @@ app.post("/receivemessage", (req: express.Request, res: any) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+export const handler = serverless(app);
