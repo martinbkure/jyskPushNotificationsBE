@@ -41,6 +41,10 @@ app.post("/receivemessage", (req: express.Request, res: any) => {
   });
 });
 
+app.get("/test", (req: Request, res: Response) => {
+  res.send("Hello test");
+});
+
 export const handler = serverless(app, {
   basePath: "/.netlify/functions/api",
 });
