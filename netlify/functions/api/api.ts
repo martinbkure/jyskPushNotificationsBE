@@ -6,7 +6,6 @@ import { options } from "./push-settings";
 
 const app = express();
 app.use(cors());
-const PORT = 3000;
 
 const apnProvider = new apn.Provider(options);
 const deviceToken =
