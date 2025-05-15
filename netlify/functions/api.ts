@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import apn from "apn";
-import { options } from "../netlify/functions/push-settings";
+import { options } from "./push-settings";
 
 const app = express();
 app.use(cors());
