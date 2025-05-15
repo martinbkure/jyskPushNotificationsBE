@@ -3,12 +3,26 @@ import cors from "cors";
 import apn from "apn";
 import serverless from "serverless-http";
 import { options } from "./push-settings";
-import { getStore } from "@netlify/blobs";
+import fs from "fs/promises";
+import path from "path";
 
-const store = getStore({ name: "device-tokens", consistency: "strong" });
+const DATA_FILE = path.resolve(__dirname, "devices.json");
 
 const app = express();
 app.use(cors());
+
+async function readStore(): Promise<Record<string, string>> {
+  try {
+    const content = await fs.readFile(DATA_FILE, "utf-8");
+    return JSON.parse(content);
+  } catch {
+    return {};
+  }
+}
+
+async function writeStore(data: Record<string, string>) {
+  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
 
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url);
@@ -55,8 +69,16 @@ app.post(
     res: any
   ) => {
     const { deviceToken, userId, storeId } = req.body;
+
+    if (!deviceToken || !userId || !storeId) {
+      return res.status(400).send("Missing fields");
+    }
+
     const key = `store:${storeId}:user:${userId}`;
-    await store.set(key, deviceToken);
+    const store = await readStore();
+    store[key] = deviceToken;
+    await writeStore(store);
+
     return res.status(200).send("Device token updated");
   }
 );
@@ -64,7 +86,7 @@ app.post(
 app.get(
   "/api/devices",
   async (
-    req: Request<{}, {}, { userId: string; storeId: string }>,
+    req: Request<{}, {}, {}, { userId?: string; storeId?: string }>,
     res: any
   ) => {
     const { userId, storeId } = req.query;
@@ -74,8 +96,10 @@ app.get(
     }
 
     const key = `store:${storeId}:user:${userId}`;
-    const token = await store.get(key);
+    const store = await readStore();
+    const token = store[key];
 
+    if (!token) return res.status(404).send("Not found");
     return res.status(200).send(token);
   }
 );
@@ -93,15 +117,22 @@ app.delete(
     }
 
     const key = `store:${storeId}:user:${userId}`;
-    await store.delete(key);
+    const store = await readStore();
+
+    if (!store[key]) {
+      return res.status(404).send("Token not found");
+    }
+
+    delete store[key];
+    await writeStore(store);
 
     return res.status(200).send(`Deleted device token for user ${userId}`);
   }
 );
 
-app.get("/api/devices/all", async (req: Request, res: any) => {
-  const keys = await store.list();
-  return res.status(200).send(keys);
+app.get("/api/devices/all", async (_req: Request, res: any) => {
+  const store = await readStore();
+  return res.status(200).send(store);
 });
 
 export const handler = serverless(app, {
