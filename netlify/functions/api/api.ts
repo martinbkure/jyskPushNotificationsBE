@@ -3,6 +3,9 @@ import cors from "cors";
 import apn from "apn";
 import serverless from "serverless-http";
 import { options } from "./push-settings";
+import { getStore } from "@netlify/blobs";
+
+const store = getStore({ name: "device-tokens", consistency: "strong" });
 
 const app = express();
 app.use(cors());
@@ -41,8 +44,64 @@ app.post("/receivemessage", (req: express.Request, res: any) => {
   });
 });
 
-app.get("/test", (req: Request, res: Response) => {
-  res.send("Hello test");
+app.post(
+  "/api/devices",
+  async (
+    req: Request<
+      {},
+      {},
+      { deviceToken: string; userId: string; storeId: string }
+    >,
+    res: any
+  ) => {
+    const { deviceToken, userId, storeId } = req.body;
+    const key = `store:${storeId}:user:${userId}`;
+    await store.set(key, deviceToken);
+    return res.status(200).send("Device token updated");
+  }
+);
+
+app.get(
+  "/api/devices",
+  async (
+    req: Request<{}, {}, { userId: string; storeId: string }>,
+    res: any
+  ) => {
+    const { userId, storeId } = req.query;
+
+    if (!userId || !storeId) {
+      return res.status(400).send("Missing userId or storeId");
+    }
+
+    const key = `store:${storeId}:user:${userId}`;
+    const token = await store.get(key);
+
+    return res.status(200).send(token);
+  }
+);
+
+app.delete(
+  "/api/devices",
+  async (
+    req: Request<{}, {}, {}, { userId?: string; storeId?: string }>,
+    res: any
+  ) => {
+    const { userId, storeId } = req.query;
+
+    if (!userId || !storeId) {
+      return res.status(400).send("Missing userId or storeId");
+    }
+
+    const key = `store:${storeId}:user:${userId}`;
+    await store.delete(key);
+
+    return res.status(200).send(`Deleted device token for user ${userId}`);
+  }
+);
+
+app.get("/api/devices/all", async (req: Request, res: any) => {
+  const keys = await store.list();
+  return res.status(200).send(keys);
 });
 
 export const handler = serverless(app, {

@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@netlify/blobs": "^9.1.1",
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.17",
     "apn": "^2.2.0",
