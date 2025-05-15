@@ -37,8 +37,4 @@ app.post("/receivemessage", (req: express.Request, res: any) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-
 export const handler = serverless(app);
