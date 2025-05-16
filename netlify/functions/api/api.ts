@@ -59,7 +59,7 @@ app.post("/receivemessage", (req: express.Request, res: any) => {
 });
 
 app.post(
-  "/api/devices",
+  "/devices",
   async (
     req: Request<
       {},
@@ -84,7 +84,7 @@ app.post(
 );
 
 app.get(
-  "/api/devices",
+  "/devices",
   async (
     req: Request<{}, {}, {}, { userId?: string; storeId?: string }>,
     res: any
@@ -105,7 +105,7 @@ app.get(
 );
 
 app.delete(
-  "/api/devices",
+  "/devices",
   async (
     req: Request<{}, {}, {}, { userId?: string; storeId?: string }>,
     res: any
@@ -130,7 +130,7 @@ app.delete(
   }
 );
 
-app.get("/api/devices/all", async (_req: Request, res: any) => {
+app.get("/devices/all", async (_req: Request, res: any) => {
   const store = await readStore();
   return res.status(200).send(store);
 });
