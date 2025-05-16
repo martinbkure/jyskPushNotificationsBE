@@ -106,16 +106,8 @@ app.delete("/devices", async (req: Request, res: Response) => {
 // List all device tokens
 app.get("/devices/all", async (_req: Request, res: Response) => {
   const keys = await store.list();
-  const results: Record<string, string> = {};
 
-  for (const key of keys) {
-    const token = await store.get(key);
-    if (token) {
-      results[key] = token;
-    }
-  }
-
-  return res.status(200).json(results);
+  return res.status(200).json(keys);
 });
 
 // Export Netlify handler
