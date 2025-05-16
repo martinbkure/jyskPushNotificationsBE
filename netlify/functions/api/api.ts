@@ -138,4 +138,9 @@ app.get("/devices/all", async (_req: Request, res: any) => {
 
 export const handler = serverless(app, {
   basePath: "/.netlify/functions/api",
+  request: true,
 });
+
+// app.listen(3000, () => {
+//   console.log("Server is running on port 3000");
+// });
