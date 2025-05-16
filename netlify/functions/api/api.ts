@@ -9,8 +9,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Create a named blob store
-const store = getStore("push-notifications");
+app.use((req, res, next) => {
+  if (
+    req.headers["content-type"] === "application/json" &&
+    Buffer.isBuffer(req.body)
+  ) {
+    try {
+      const raw = req.body.toString("utf8");
+      req.body = JSON.parse(raw);
+    } catch {
+      return res.status(400).send("Invalid JSON body");
+    }
+  }
+  next();
+});
+
+const store = getStore({
+  name: "push-notifications",
+  siteID: "2faa76d4-84a4-47ee-8b8b-beffe0b94406",
+  token: "nfp_p8LuKaPTw35iszpJSb3t3w36P1zwkk62fc9e",
+});
 
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url);
