@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Create a named blob store
-const store = getStore({ name: "device-tokens" });
+const store = getStore("push-notifications");
 
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url);
