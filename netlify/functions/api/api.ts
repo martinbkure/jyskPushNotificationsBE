@@ -10,6 +10,7 @@ const DATA_FILE = path.resolve(__dirname, "devices.json");
 
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 async function readStore(): Promise<Record<string, string>> {
   try {
@@ -69,7 +70,7 @@ app.post(
     res: any
   ) => {
     const { deviceToken, userId, storeId } = req.body;
-
+    console.log(req.body);
     if (!deviceToken || !userId || !storeId) {
       return res.status(400).send("Missing fields");
     }
