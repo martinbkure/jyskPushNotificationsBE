@@ -1,7 +1,7 @@
 [functions]
   directory = "netlify/functions"
   external_node_modules = ["express", "cors", "apn", "node-pushnotifications"]
-  included_files = ["netlify/functions/api/cert/*.pem", "netlify/functions/api/api.ts"]
+  included_files = ["netlify/functions/api/cert/*.pem", "netlify/functions/api/api.ts",  "netlify/functions/api/devices.json"]
 
 [experimental]
   kv = true

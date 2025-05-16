@@ -10,7 +10,20 @@ const DATA_FILE = path.resolve(__dirname, "devices.json");
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use((req, res, next) => {
+  if (
+    req.headers["content-type"] === "application/json" &&
+    Buffer.isBuffer(req.body)
+  ) {
+    try {
+      const raw = req.body.toString("utf8");
+      req.body = JSON.parse(raw);
+    } catch {
+      return res.status(400).send("Invalid JSON body");
+    }
+  }
+  next();
+});
 
 async function readStore(): Promise<Record<string, string>> {
   try {
@@ -34,8 +47,6 @@ const apnProvider = new apn.Provider(options);
 const deviceToken =
   "b4bcd2b6043d90f8ace9738bdf495b8b294f0ca876f1f350a41803b0df43e5d5";
 
-app.use(express.json());
-
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World");
 });
@@ -53,7 +64,6 @@ app.post("/receivemessage", (req: express.Request, res: any) => {
   note.topic = "dk.creativecoders.JYSK-Notify";
 
   apnProvider.send(note, deviceToken).then((result) => {
-    console.log(result, result.failed);
     apnProvider.shutdown();
     return res.status(200).send("Message sent");
   });
@@ -70,9 +80,9 @@ app.post(
     res: any
   ) => {
     const { deviceToken, userId, storeId } = req.body;
-    console.log(req.body);
+
     if (!deviceToken || !userId || !storeId) {
-      return res.status(400).send("Missing fields");
+      return res.status(400).send("Missing fields", JSON.stringify(req.body));
     }
 
     const key = `store:${storeId}:user:${userId}`;
