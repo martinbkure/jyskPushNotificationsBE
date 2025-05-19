@@ -47,12 +47,10 @@ app.get("/", (req: Request, res: Response) => {
 // Send APNs notification
 app.post("/receivemessage", async (req: Request, res: Response) => {
   const { message } = req.body;
-  if (!message) {
-    return res.status(400).json({ error: "message must be a string" });
-  }
+
 
   const note = new apn.Notification();
-  note.alert = message;
+  note.alert = 'jysk notification - everything is good';
   note.sound = "ping.aiff";
   note.badge = 1;
   note.topic = "dk.creativecoders.JYSK-Notify";
