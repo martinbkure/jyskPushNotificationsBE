@@ -55,7 +55,7 @@ app.post("/receivemessage", async (req: Request, res: Response) => {
   note.badge = 1;
   note.topic = "dk.creativecoders.JYSK-Notify";
 
-  await apnProvider.send(note, 'f8efb2b19c15db833063b46ff67a2e3af4236ac7eca1f578c519c336c406020d');
+  await apnProvider.send(note, '8f6e9a9329ef9124e70fb5abcd501c84971752bc0d964bd9271fef5562d58760');
   apnProvider.shutdown();
 
   return res.status(200).send("Message sent");
