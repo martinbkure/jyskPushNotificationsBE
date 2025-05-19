@@ -50,7 +50,7 @@ app.post("/receivemessage", async (req: Request, res: Response) => {
 
 
   const note = new apn.Notification();
-  note.alert = 'jysk notification - everything is good';
+  note.alert = 'jysk notification - received new click and collect order';
   note.sound = "ping.aiff";
   note.badge = 1;
   note.topic = "dk.creativecoders.JYSK-Notify";
