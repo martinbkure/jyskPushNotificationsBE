@@ -47,7 +47,7 @@ app.get("/", (req: Request, res: Response) => {
 // Send APNs notification
 app.post("/receivemessage", async (req: Request, res: Response) => {
   const { message } = req.body;
-  if (typeof message !== "string") {
+  if (!message) {
     return res.status(400).json({ error: "message must be a string" });
   }
 
